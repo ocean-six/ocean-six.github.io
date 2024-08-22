@@ -50,7 +50,7 @@ $(function () {
     }).get().filter(value => value !== null);
 
     const digitsCount = parseInt($("#digitsCount").val());
-    const regionCodeChecked = $("#regionCodeCheckbox").is(":checked");
+    const regionCodeChecked = $("#regionCodeCheckbox1").is(":checked");
     const cmbCodeCheckbox = $("#cmbCodeCheckbox").is(":checked");
     const spdbCodeCheckbox = $("#regionCodeCheckbox3").is(":checked");
     await cn.forEachOnlyLuhnValid(c => {
@@ -64,7 +64,8 @@ $(function () {
         }
       }
       if (spdbCodeCheckbox) {
-        const middleThreeDigits = c.slice(6, 8); // 获取卡号的第7到第9位
+        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        const middleThreeDigits = tailString.slice(6, 8); // 获取卡号的第7到第9位
         // 检查是否有区域码匹配
         let regionFound = false;
         for (const region in spdbCodes) {
@@ -83,7 +84,8 @@ $(function () {
       }
 
       if (cmbCodeCheckbox) {
-        const middleThreeDigits = c.slice(6, 9); // 获取卡号的第7到第9位
+        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        const middleThreeDigits = tailString.slice(6, 9); // 获取卡号的第7到第9位
         // 检查是否有区域码匹配
         let regionFound = false;
         for (const region in regionCodes) {
@@ -102,7 +104,8 @@ $(function () {
       }
 
       if (regionCodeChecked) {
-        const middleThreeDigits = c.slice(6, 9);
+        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        const middleThreeDigits = tailString.slice(6, 9);
         if (!regions.hasOwnProperty(middleThreeDigits)) {
           return;
         }
