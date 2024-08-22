@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="calc bank card number" />
+  <title>野生卡片聚集地🏠生成器</title>
+  <!-- css -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../libjscss/simple/simple.css" />
+
+  <style type="text/css">
+    body {
+      margin: 5px;
+    }
+
+    #main {
+      width: 100%;
+      margin: 0 auto;
+      max-width: 960px;
+    }
+
+    #card-length {
+      min-width: 36px;
+      padding: 6px 6px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    /* CSS for card result */
+    .card-green {
+      color: green;
+    }
+
+    .card-blue {
+      color: blue;
+    }
+
+    .form-group-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      /* 控制列和行之间的间距 */
+    }
+
+    .card-red {
+      color: red;
+    }
+
+    /* 添加一个名为 result-div 的 CSS 类，用于修改结果 div 的样式 */
+    .result-div {
+      color: #fff;
+      /* 设置文本颜色为白色 */
+      background-color: #007bff;
+      /* 设置背景颜色为蓝色 */
+      padding: 10px;
+      /* 添加内边距 */
+      border-radius: 5px;
+      /* 添加圆角边框 */
+      margin-top: 10px;
+      /* 添加顶部外边距 */
+    }
+
+    /* CSS for clear button */
+    #clear-btn {
+      margin-left: 10px;
+      background-color: #87ceeb;
+      /* 将按钮背景色设置为天蓝色 */
+      border-color: #87ceeb;
+      /* 边框颜色也设置为天蓝色 */
+    }
+
+    #clear-btn:hover {
+      background-color: #7acfea;
+      /* 悬停时的背景色 */
+      border-color: #7acfea;
+      /* 悬停时的边框颜色 */
+    }
+
+    #usageButton:hover {
+      background-color: #7acfea;
+      /* 悬停时的背景色 */
+      border-color: #7acfea;
+      /* 悬停时的边框颜色 */
+    }
+
+    #usageButton {
+      margin-left: 10px;
+      background-color: #87ceeb;
+      /* 将按钮背景色设置为天蓝色 */
+      border-color: #87ceeb;
+      /* 边框颜色也设置为天蓝色 */
+    }
+
+    #usageButton:focus {
+      outline: none;
+      /* 移除按钮的默认聚焦样式 */
+      box-shadow: none;
+    }
+  </style>
+</head>
+
+<body>
+  <script src="json.js"></script>
+  <script src="regions.js"></script>
+  <script src="cmb.js"></script>
+  <script src="spdb.js"></script>
+  <script type="text/javascript" charset="UTF-8" src="libjscss/mask/mask.js"></script>
+  <script type="text/javascript" charset="UTF-8">
+    var mask = new Mask();
+    mask.show();
+  </script>
+
+  <div id="main">
+    <h1>野生卡片聚集地🏠</h1>
+    <p id="prompt-info">根据输入的数字、字母及 * 号（同一字母表示相同数字，* 号表示任意数字）</p>
+    <p id="prompt-info">生成满足 Luhn 算法的银行卡号，用于卡号定制提前算号。</p>
+    <p id="prompt-info">欢迎提供好想法来优化该生成器，联系vx：yeeeoe</p>
+    <div class="input-group mb-3">
+      <span class="input-group-text" id="card-length">0</span>
+      <input class="form-control" type="text" id="card" placeholder="请输入卡号">
+      <button class="btn btn-danger" id="clear-btn" onclick="clearInput()">清空</button> <!-- 清空按钮 -->
+    </div>
+    <div id="result" class="result-div"></div>
+    <p></p>
+    <div class="form-group">
+      <label for="filterLength">过滤卡号后几位不包含4：</label>
+      <select class="form-control" id="filterLength" style="display:inline-block; width:auto; margin-left:10px;">
+        <option value="0">不过滤</option>
+        <option value="7">后7位</option>
+        <option value="8">后8位</option>
+        <option value="9">后9位</option>
+        <option value="10">后10位</option>
+        <option value="13">后13位</option>
+        <option value="16">后16位</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="digitsCount">后<select id="digitsCount" class="form-control"
+          style="display: inline-block; width: auto;">
+          <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+          <option value="7">7</option>
+          <option value="8">8</option>
+          <option value="9">9</option>
+        </select>位包含以下数字：</label><br>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit0" value="0">
+        <label class="form-check-label" for="digit0">0</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit1" value="1">
+        <label class="form-check-label" for="digit1">1</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit2" value="2">
+        <label class="form-check-label" for="digit2">2</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit3" value="3">
+        <label class="form-check-label" for="digit3">3</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit4" value="4">
+        <label class="form-check-label" for="digit4">4</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit5" value="5">
+        <label class="form-check-label" for="digit5">5</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit6" value="6">
+        <label class="form-check-label" for="digit6">6</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit7" value="7">
+        <label class="form-check-label" for="digit7">7</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit8" value="8">
+        <label class="form-check-label" for="digit8">8</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="checkbox" id="digit9" value="9">
+        <label class="form-check-label" for="digit9">9</label>
+      </div>
+    </div>
+
+    <p></p>
+    <div class="form-group-container">
+      <div class="form-group">
+        <input type="checkbox" id="regionCodeCheckbox1">
+        <label for="regionCodeCheckbox1">使用交通地区码</label>
+      </div>
+      <div class="form-group">
+        <input type="checkbox" id="cmbCodeCheckbox">
+        <label for="cmbCodeCheckbox">使用招行地区码</label>
+      </div>
+      <div class="form-group">
+        <input type="checkbox" id="regionCodeCheckbox2">
+        <label for="regionCodeCheckbox2">使用中行地区码</label>
+      </div>
+      <div class="form-group">
+        <input type="checkbox" id="regionCodeCheckbox3">
+        <label for="regionCodeCheckbox3">使用浦发地区码</label>
+      </div>
+    </div>
+
+    <p></p>
+
+    <p class="result-p"><span id="validText">已输入有效位数：</span><span id="validCount">0</span><button id="usageButton"
+        class="btn btn-danger">使用说明</button></p>
+
+    <div class="alert alert-primary" role="alert">
+      请输入卡号，支持输入空格分隔符
+    </div>
+
+    <div id="rslt"></div>
+  </div>
+
+  <!-- JS Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="libjscss/toptip/toptip.js"></script>
+  <script src="libjscss/simple/simple.js"></script>
+  <script src="js/explain.js" type="text/javascript"></script>
+  <script src="lib/luhn.js"></script>
+  <script src="lib/card_util.js"></script>
+  <script src="js/card_num.js"></script>
+  <script>
+    function clearInput () {
+      document.getElementById('card').value = ''; // 清空输入框内容
+    }
+
+    function search () {
+      const searchValue = document.getElementById('card').value.replace(/\s/g, '').trim().toLowerCase().substring(0, 6); // 去除所有空白字符并保留前六位
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '';
+
+      if (searchValue.length < 6) {
+        return; // 如果输入字符数小于四位，不执行搜索操作
+      }
+
+      let found = false;
+      let resultString = ''; // 存储搜索结果的字符串
+
+      excelData.forEach(item => {
+        const bankNoStr = item.bank_no.toString();
+        if (bankNoStr.startsWith(searchValue)) {
+          if (found) {
+            resultString += ', '; // 在结果之间添加逗号分隔
+          }
+          resultString += item.bank_name; // 将银行名称添加到结果字符串中
+          found = true;
+        }
+      });
+
+      if (found) {
+        resultDiv.innerHTML = resultString; // 将结果字符串设置为结果 div 的内容
+      } else {
+        resultDiv.innerHTML = 'No results found';
+      }
+    }
+
+    // 监听输入事件
+    document.getElementById('card').addEventListener('input', search);
+
+  </script>
+</body>
+
+</html>
