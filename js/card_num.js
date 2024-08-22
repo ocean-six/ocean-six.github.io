@@ -64,7 +64,7 @@ $(function () {
         }
       }
       if (spdbCodeCheckbox) {
-        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        let tailString = c.replace(/\s/g, "");
         const middleThreeDigits = tailString.slice(6, 8); // 获取卡号的第7到第9位
         // 检查是否有区域码匹配
         let regionFound = false;
@@ -84,7 +84,7 @@ $(function () {
       }
 
       if (cmbCodeCheckbox) {
-        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        let tailString = c.replace(/\s/g, "");
         const middleThreeDigits = tailString.slice(6, 9); // 获取卡号的第7到第9位
         // 检查是否有区域码匹配
         let regionFound = false;
@@ -104,7 +104,7 @@ $(function () {
       }
 
       if (regionCodeChecked) {
-        let tailString = c.replace(/\s/g, "").slice(-filterLength);
+        let tailString = c.replace(/\s/g, "");
         const middleThreeDigits = tailString.slice(6, 9);
         if (!regions.hasOwnProperty(middleThreeDigits)) {
           return;
